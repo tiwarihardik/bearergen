@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Bearer Token Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Optional custom styling */
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 py-10">
+
+    <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md">
+        <h1 class="text-3xl font-semibold text-center text-gray-800 mb-6">Random Bearer Token Generator</h1>
+        
+        <!-- Token Display Area -->
+        <div class="mb-4">
+            <label for="token" class="block text-m font-medium mb-2 text-gray-700">Generated Bearer Token</label>
+            <textarea id="token" rows="3" class="w-full p-3 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" readonly></textarea>
+        </div>
+        
+        <!-- Button to Generate Token -->
+        <button id="generate-btn" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Generate Token
+        </button>
+        
+        <!-- Button to Copy Token -->
+        <button id="copy-btn" class="w-full bg-yellow-500 text-white p-3 rounded-lg mt-4 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500" style="display:none;">
+            Copy to Clipboard
+        </button>
+        
+        <!-- Button to Download .env file -->
+        <button id="download-btn" class="w-full bg-green-500 text-white p-3 rounded-lg mt-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500" style="display:none;">
+            Download .env File
+        </button>
+    </div>
+
+    <script>
+        // Function to generate a random bearer token (hash)
+        function generateRandomToken(length = 32) {
+            const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            let token = "";
+            for (let i = 0; i < length; i++) {
+                token += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            return token;
+        }
+
+        // Function to handle button click event to generate token
+        document.getElementById("generate-btn").addEventListener("click", function() {
+            const token = generateRandomToken();
+            const tokenArea = document.getElementById("token");
+            tokenArea.value = `Bearer ${token}`; 
+            
+            // Display the Copy and Download buttons
+            document.getElementById("copy-btn").style.display = "block";
+            document.getElementById("download-btn").style.display = "block";
+
+            // Save the token as an environment variable in .env format
+            const envContent = `BEARER_TOKEN=${token}`;
+            
+            // Trigger the download of .env file
+            document.getElementById("download-btn").addEventListener("click", function() {
+                const blob = new Blob([envContent], { type: 'text/plain' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = '.env';
+                link.click();
+            });
+
+            // Copy the token to the clipboard when the button is clicked
+            document.getElementById("copy-btn").addEventListener("click", function() {
+                tokenArea.select();
+                tokenArea.setSelectionRange(0, 99999); 
+                document.execCommand("copy").then(
+                    alert("Token copied to clipboard!")
+                );
+
+                
+                
+            });
+        });
+    </script>
+</body>
+</html>
